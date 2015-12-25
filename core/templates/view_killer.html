@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block body %}
+    <form method="POST">
+    {% csrf_token %}
+    {{ killer_form.as_p }}
+
+        <hr>
+        {% for f in my_kill_forms %}
+            {{ f.as_p }}
+        {% endfor %}
+    <button type="submit">Mettre à jour</button>
+    </form>
+{% endblock %}
