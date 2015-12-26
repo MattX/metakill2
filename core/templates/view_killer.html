@@ -18,6 +18,8 @@
         {% if show_fill %}
             <hr>
             <h3>Écriture des kills</h3>
+            <p>Avancement général : {% for p in valid_count %}{{ p.0 }}: {{ p.1 }} kills
+            remplis{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {{ my_kill_forms|bootstrap }}
         {% endif %}
 

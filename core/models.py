@@ -46,6 +46,15 @@ class Killer(models.Model):
                 k.assigned_to = assignee
                 k.save()
 
+    def count_valid_kills(self):
+        valid = []
+
+        good_kills = self.kill_set.exclude(desc__isnull=False, desc__exact="")
+        for u in self.participants.all():
+            valid.append((u, good_kills.filter(writer=u).count()))
+
+        return valid
+
 
 class Kill(models.Model):
     killer = models.ForeignKey(Killer)
