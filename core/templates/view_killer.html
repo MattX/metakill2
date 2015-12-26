@@ -1,13 +1,36 @@
 {% extends 'base.html' %}
 {% block body %}
     <form method="POST">
-    {% csrf_token %}
-    {{ killer_form.as_p }}
+        {% csrf_token %}
+        {{ killer_form.as_p }}
+        {% if admin %}
+            {{ assign_form }}
+        {% endif %}
 
+        {% if show_fill %}
         <hr>
-        {% for f in my_kill_forms %}
-            {{ f.as_p }}
+        {{ my_kill_forms }}
+        {% endif %}
+
+        {% if show_table %}
+        <hr>
+        <table>
+        <tr><th></th>
+            {% for target in participants %}
+                <th>{{ target }}</th>
+            {% endfor %}
+        </tr>
+        {% for kill_assign_list in kill_done_dic %}
+            <tr><td></td>
+            {% for kdf in kill_assign_list %}
+                <td>
+                {{ kdf }}
+                </td>
+            {% endfor %}
+            </tr>
         {% endfor %}
-    <button type="submit">Mettre à jour</button>
+        </table>
+        {% endif %}
+        <button type="submit">Mettre à jour</button>
     </form>
 {% endblock %}

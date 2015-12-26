@@ -26,3 +26,6 @@ class KillDoneForm(forms.ModelForm):
         model = models.Kill
         fields = ['done']
 
+
+class AssignForm(forms.Form):
+    assign_kills = forms.BooleanField(initial=False, required=False, help_text="Assigner les kills")

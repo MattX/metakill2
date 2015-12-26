@@ -1,14 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
+from .misc import choose_and_remove
 
 # Create your models here.
 
 class Killer(models.Model):
-    PHASES = [
-        (0, 'Sélection des participants'),
-        (10, 'Remplissage des kills'),
-        (20, 'Jeu en cours'),
-        (30, 'Terminé'),
+    class Phases:
+        initial = 0
+        filling = 10
+        playing = 20
+        done = 30
+    PHASE_CHOICES = [
+        (Phases.initial, 'Sélection des participants'),
+        (Phases.filling, 'Remplissage des kills'),
+        (Phases.playing, 'Jeu en cours'),
+        (Phases.done, 'Terminé'),
     ]
 
     participants = models.ManyToManyField(User, related_name='participating', blank=True, null=True)
@@ -16,21 +22,29 @@ class Killer(models.Model):
 
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
-    phase = models.IntegerField(choices=PHASES, default=0)
+    phase = models.IntegerField(choices=PHASE_CHOICES, default=0)
 
     def __str__(self):
         return "Killer: " + self.name
 
-    # Guarantee that all kills exist
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
+        # Guarantee that all kills exist
         for writer in self.participants.all():
             for target in self.participants.all():
                 if writer == target:
                     continue
                 elif not self.kill_set.filter(writer=writer, target=target).exists():
                     Kill(killer=self, writer=writer, target=target).save()
+
+    def assign(self):
+        for target in self.participants.all():
+            suitable_kills = list(self.kill_set.filter(target=target))
+            for assignee in self.participants.exclude(pk=target.pk):
+                k = choose_and_remove(suitable_kills)
+                k.assigned_to = assignee
+                k.save()
 
 
 class Kill(models.Model):
@@ -44,3 +58,5 @@ class Kill(models.Model):
     class Meta:
         unique_together = ('writer', 'target')
 
+    def __str__(self):
+        return "Kill de " + str(self.writer) + " pour " + str(self.target)

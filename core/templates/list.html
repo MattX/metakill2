@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
+    <h1>Liste des killers</h1>
     <ul>
     {% for k in killers %}
     <li><a href="{% url 'view_killer' k.id %}">{{ k.name }}</a></li>
