@@ -50,7 +50,7 @@ class Killer(models.Model):
     def count_valid_kills(self):
         valid = []
 
-        good_kills = self.kill_set.exclude(Q(desc__isnull=False)|Q(desc__exact=""))
+        good_kills = self.kill_set.exclude(Q(desc__isnull=True)|Q(desc__exact=""))
         for u in self.participants.all():
             valid.append((u, good_kills.filter(writer=u).count()))
 
