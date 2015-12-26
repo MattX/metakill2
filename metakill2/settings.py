@@ -1,3 +1,5 @@
+PRODUCTION = False
+
 """
 Django settings for metakill2 project.
 
@@ -20,13 +22,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rd#m%qp1izlrc@+pn(km3c#jh_yqn-g&y$o6y4w&-mrj08t5w5'
+if not PRODUCTION:
+    SECRET_KEY = 'rd#m%qp1izlrc@+pn(km3c#jh_yqn-g&y$o6y4w&-mrj08t5w5'
+    ALLOWED_HOSTS = []
+else:
+    from production import SECRET_KEY, ALLOWED_HOSTS
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not PRODUCTION
 
-ALLOWED_HOSTS = []
-VERSION = '10'
+VERSION = '17'
 
 
 # Application definition

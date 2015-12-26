@@ -1,5 +1,7 @@
 from django import forms
+from django.contrib.auth.models import User
 from django_select2.forms import Select2MultipleWidget
+from django.forms import PasswordInput
 
 from . import models
 
@@ -30,3 +32,11 @@ class KillDoneForm(forms.ModelForm):
 
 class AssignForm(forms.Form):
     assign_kills = forms.BooleanField(initial=False, required=False, help_text="Assigner les kills")
+
+
+class PasswordForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['password']
+        widgets = {'password': PasswordInput()}
+
