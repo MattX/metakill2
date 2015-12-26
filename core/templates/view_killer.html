@@ -1,36 +1,68 @@
 {% extends 'base.html' %}
+{% load bootstrap %}
+
+{% block extra_includes %}
+    {{ killer_form.media }}
+{% endblock %}
+
 {% block body %}
+    <h1>Modifier le killer : {{ killer.name }}</h1>
+
     <form method="POST">
         {% csrf_token %}
-        {{ killer_form.as_p }}
+        {{ killer_form|bootstrap }}
         {% if admin %}
-            {{ assign_form }}
+            {{ assign_form|bootstrap }}
         {% endif %}
 
         {% if show_fill %}
-        <hr>
-        {{ my_kill_forms }}
+            <hr>
+            <h3>Écriture des kills</h3>
+            {{ my_kill_forms|bootstrap }}
         {% endif %}
 
         {% if show_table %}
-        <hr>
-        <table>
-        <tr><th></th>
-            {% for target in participants %}
-                <th>{{ target }}</th>
+            <hr>
+            <h3>Mes kills</h3>
+            <ul>
+                {% for k in my_assigned_kills %}
+                    <li>{{ k.target }}: {{ k.desc }}</li>
+                {% endfor %}
+            </ul>
+            <hr>
+            <h3>Kills effectués</h3>
+            <table class="table">
+                <tr>
+                    <th>^ kille -></th>
+                    {% for target in participants %}
+                        <th>{{ target }}</th>
+                    {% endfor %}
+                </tr>
+                {% for kill_assign_list in kill_done_dic %}
+                    <tr>
+                        {% for kdf in kill_assign_list %}
+                            {% if forloop.first %}
+                                <th>{{ kdf }}</th>
+                            {% else %}
+                                <td>
+                                    {% for field in kdf %}
+                                        {{ field }}
+                                    {% endfor %}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <h3>Scores</h3>
+            <table class="table">
+            <tr><th></th><th>Kills effectués</th><th>Kills subis</th><th>Total</th></tr>
+            {% for s in scores %}
+                <tr><th>{{ s.player }}</th><td>{{ s.has_killed }}</td><td>{{ s.was_killed }}</td>
+                <td>{{ s.total }}</td></tr>
             {% endfor %}
-        </tr>
-        {% for kill_assign_list in kill_done_dic %}
-            <tr><td></td>
-            {% for kdf in kill_assign_list %}
-                <td>
-                {{ kdf }}
-                </td>
-            {% endfor %}
-            </tr>
-        {% endfor %}
-        </table>
+            </table>
         {% endif %}
-        <button type="submit">Mettre à jour</button>
+        <button type="submit" class="btn btn-success" style="width:100%">Mettre à jour</button>
     </form>
 {% endblock %}

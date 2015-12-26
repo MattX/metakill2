@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login
 from django.db.models import Q
-from django.core.exceptions import PermissionDenied
-from django.forms import ModelForm, PasswordInput, modelformset_factory, modelform_factory
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.forms import ModelForm, PasswordInput, modelformset_factory
 from django.contrib import messages
 
 from . import models, forms, misc
@@ -74,14 +74,17 @@ def view_killer(request, id):
     # Kills forms
     kills_forms_prefix = "my_kills"
     my_kill_forms_factory = modelformset_factory(models.Kill, form=forms.KillFillForm, extra=0)
-    my_kills = models.Kill.objects.filter(writer=request.user)
+    my_kills = killer.kill_set.filter(writer=request.user)
 
     my_kill_forms = my_kill_forms_factory(queryset=my_kills, prefix="my_kills")
 
     if request.method == 'POST' and killer.phase == models.Killer.Phases.filling:
         my_kill_forms = my_kill_forms_factory(request.POST, queryset=my_kills, prefix="my_kills")
-        if my_kill_forms.is_valid():
-            my_kill_forms.save()
+        try:
+            if my_kill_forms.is_valid():
+                my_kill_forms.save()
+        except ValidationError:
+            my_kill_forms = my_kill_forms_factory(queryset=my_kills, prefix="my_kills")
 
     # Kills done table
     killer_kills = models.Kill.objects.filter(killer=killer)
@@ -90,10 +93,10 @@ def view_killer(request, id):
     kill_done_list = []
 
     for assigned_to in participants:
-        assignee_kills = []
+        assignee_kills = [assigned_to]
         for target in participants:
             if assigned_to == target:
-                assignee_kills.append("X")
+                assignee_kills.append("")
             else:
                 current_kill = killer_kills.filter(assigned_to=assigned_to, target=target).first()
                 if not current_kill is None:
@@ -102,15 +105,40 @@ def view_killer(request, id):
                                                          prefix="done_kills_" + str(current_kill.pk))
                         if current_kdf.is_valid():
                             current_kdf.save()
-                    assignee_kills.append(forms.KillDoneForm(instance=current_kill,
-                                                             prefix="done_kills_" + str(current_kill.pk)))
+
+                    kdf = forms.KillDoneForm(instance=current_kill, prefix="done_kills_" + str(current_kill.pk))
+                    if not admin:
+                        misc.make_readonly(kdf)
+                    assignee_kills.append(kdf)
                 else:
                     assignee_kills.append(None)
         kill_done_list.append(assignee_kills)
 
+
+    # Kills I must do
+    my_assigned_kills = killer_kills.filter(assigned_to=request.user)
+
+
+    # Scores
+    class Score:
+        def __init__(self, player, has_killed, was_killed):
+            self.player = player
+            self.has_killed = has_killed
+            self.was_killed = was_killed
+            self.total = has_killed - was_killed
+
+    scores = []
+    for p in killer.participants.all():
+        scores.append(Score(p, killer.kill_set.filter(assigned_to=p, done=True).count(),
+                            killer.kill_set.filter(target=p, done=True).count()))
+
+    scores.sort(key=lambda score: score.total, reverse=True)
+
+
     return render(request, 'view_killer.html', {'killer_form': kf, 'my_kill_forms': my_kill_forms, 'admin': admin,
                                                 'killer': killer, 'kill_done_dic': kill_done_list, 'assign_form': af,
-                                                'participants': participants,
+                                                'participants': participants, 'my_assigned_kills': my_assigned_kills,
+                                                'scores': scores,
                                                 'show_fill': killer.phase == killer.Phases.filling,
                                                 'show_table': killer.phase >= killer.Phases.playing})
 

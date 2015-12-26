@@ -7,7 +7,8 @@ from . import models
 class KillerForm(forms.ModelForm):
     class Meta:
         model = models.Killer
-        fields = ['name', 'desc', 'phase', 'participants', 'admins']
+        fields = ['name', 'phase', 'participants', 'admins']
+        widgets = {'participants': Select2MultipleWidget, 'admins': Select2MultipleWidget}
 
 
 class KillFillForm(forms.ModelForm):

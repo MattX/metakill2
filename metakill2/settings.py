@@ -26,7 +26,7 @@ SECRET_KEY = 'rd#m%qp1izlrc@+pn(km3c#jh_yqn-g&y$o6y4w&-mrj08t5w5'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-VERSION = '5'
+VERSION = '10'
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrapform',
+    'django_select2',
     'core',
 ]
 
