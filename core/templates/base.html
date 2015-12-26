@@ -26,9 +26,13 @@
         <li><a href="{% url "list_killers" %}">Liste de mes killers</a></li>
       </ul>
 
+        {% if request.user.is_authenticated %}
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#">{{ request.user }}</a></li>
+        <li><a href="{% url 'password_change' %}">Changer de mot de passe</a></li>
+        <li><a href="{% url 'logout_view' %}">Se déconnecter</a></li>
       </ul>
+        {% endif %}
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>

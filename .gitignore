@@ -1,4 +1,5 @@
 db.sqlite3
+metakill2/production.py
 
 ### GitHub standard Python gitignore
 # Byte-compiled / optimized / DLL files

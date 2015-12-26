@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import ModelForm, PasswordInput, modelformset_factory
@@ -12,7 +12,7 @@ from . import models, forms, misc
 # Create your views here.
 
 
-def login(request):
+def login_view(request):
     class LoginForm(ModelForm):
         class Meta:
             model = User
@@ -29,7 +29,7 @@ def login(request):
     if request.method == 'POST':
         u = authenticate(username=request.POST.get('username'), password=request.POST.get('password'))
         if u:
-            auth_login(request, u)
+            login(request, u)
             return redirect(list_killers)
         else:
             messages.add_message(request, messages.ERROR, "Mot de passe ou nom d'utilisateur incorrect")
@@ -147,3 +147,22 @@ def list_killers(request):
     my_killers = models.Killer.objects.filter(Q(participants__in=[request.user]) | Q(admins__in=[request.user])).distinct()
 
     return render(request, 'list.html', {'killers': my_killers})
+
+
+def password_change(request):
+    if request.method == 'POST':
+        pf = forms.PasswordForm(request.POST)
+        if pf.is_valid():
+            request.user.set_password(pf.cleaned_data['password'])
+            request.user.save()
+            messages.success(request, "Mot de passe changé. Veuillez vous reconnecter.")
+            return redirect(list_killers)
+
+    pf = forms.PasswordForm()
+    return render(request, 'password.html', {'password_form': pf})
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Vous avez été déconnecté")
+    return redirect(login_view)
