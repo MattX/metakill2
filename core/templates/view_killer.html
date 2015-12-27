@@ -28,7 +28,7 @@
             <h3>Mes kills</h3>
             <ul>
                 {% for k in my_assigned_kills %}
-                    <li>{{ k.target }}: {{ k.desc }}</li>
+                    <li><b>{{ k.target }}</b>: {{ k.desc }} <i>(écrit par {{ k.writer }}</i></li>
                 {% endfor %}
             </ul>
             <hr>
