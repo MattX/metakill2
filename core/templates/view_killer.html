@@ -26,11 +26,9 @@
         {% if show_table %}
             <hr>
             <h3>Mes kills</h3>
-            <ul>
-                {% for k in my_assigned_kills %}
-                    <li><b>{{ k.target }}</b>: {{ k.desc }} <i>(écrit par {{ k.writer }}</i></li>
-                {% endfor %}
-            </ul>
+            {% for k in my_assigned_kills %}
+                <p><b>{{ k.target }}</b> (écrit par {{ k.writer }}:<br/> {{ k.desc|linebreaksbr }} </p>
+            {% endfor %}
             <hr>
             <h3>Kills effectués</h3>
             <table class="table">
