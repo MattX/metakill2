@@ -18,7 +18,7 @@ class Killer(models.Model):
         (Phases.done, 'Terminé'),
     ]
 
-    participants = models.ManyToManyField(User, related_name='participating', blank=True, null=True)
+    participants = models.ManyToManyField(User, related_name='participating', blank=True)
     admins = models.ManyToManyField(User, related_name='administrating')
 
     name = models.CharField(max_length=200)

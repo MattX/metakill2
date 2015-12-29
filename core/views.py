@@ -127,7 +127,7 @@ def view_killer(request, id):
             self.player = player
             self.has_killed = has_killed
             self.was_killed = was_killed
-            self.total = has_killed - was_killed
+            self.total = has_killed*1.5 - was_killed
 
     scores = []
     for p in killer.participants.all():
