@@ -136,11 +136,13 @@ def view_killer(request, id):
 
     scores.sort(key=lambda score: score.total, reverse=True)
 
+    # Liste des kills faits
+    faits = killer.kill_set.filter(done=True)
 
     return render(request, 'view_killer.html', {'killer_form': kf, 'my_kill_forms': my_kill_forms, 'admin': admin,
                                                 'killer': killer, 'kill_done_dic': kill_done_list, 'assign_form': af,
                                                 'participants': participants, 'my_assigned_kills': my_assigned_kills,
-                                                'scores': scores, 'valid_count': valid_count,
+                                                'scores': scores, 'valid_count': valid_count, 'faits': faits,
                                                 'show_fill': killer.phase == killer.Phases.filling,
                                                 'show_table': killer.phase >= killer.Phases.playing})
 
