@@ -45,7 +45,6 @@ def view_killer(request, id):
     killer = get_object_or_404(models.Killer, id=id)
     admin = request.user in killer.admins.all()
 
-
     if not request.user in list(killer.admins.all()) + list(killer.participants.all()):
         raise PermissionDenied
 
@@ -136,13 +135,16 @@ def view_killer(request, id):
 
     scores.sort(key=lambda score: score.total, reverse=True)
 
-    # Liste des kills faits
-    faits = killer.kill_set.filter(done=True)
+    # Done kills
+    kills_to_display = killer.kill_set.all()
+    if killer.phase < killer.Phases.done:
+        kills_to_display = kills_to_display.filter(done=True)
 
     return render(request, 'view_killer.html', {'killer_form': kf, 'my_kill_forms': my_kill_forms, 'admin': admin,
                                                 'killer': killer, 'kill_done_dic': kill_done_list, 'assign_form': af,
                                                 'participants': participants, 'my_assigned_kills': my_assigned_kills,
-                                                'scores': scores, 'valid_count': valid_count, 'faits': faits,
+                                                'scores': scores, 'valid_count': valid_count,
+                                                'kills_to_display': kills_to_display,
                                                 'show_fill': killer.phase == killer.Phases.filling,
                                                 'show_table': killer.phase >= killer.Phases.playing})
 

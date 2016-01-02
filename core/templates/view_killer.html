@@ -63,10 +63,13 @@
             {% endfor %}
             </table>
 
-            <h3>Kills effectués</h3>
-            {% for f in faits %}
-            <p><b>{{ f.assigned_to }} pour {{ f.target }} :</b> {{ f.desc }} (écrit par {{ f.writer }})</p>
+            <h3>Kills</h3>
+            <table>
+            {% for f in kills_to_display %}
+            <tr><td>{{ f.assigned_to }} pour {{ f.target }} :</td>
+                <td> {{ f.desc }} (écrit par {{ f.writer }})</td></tr>
             {% endfor %}
+            </table>
         {% endif %}
         <button type="submit" class="btn btn-success" style="width:100%">Mettre à jour</button>
     </form>
