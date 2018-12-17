@@ -34,9 +34,6 @@ class AssignForm(forms.Form):
     assign_kills = forms.BooleanField(initial=False, required=False, help_text="Assigner les kills")
 
 
-class PasswordForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['password']
-        widgets = {'password': PasswordInput()}
-
+class PasswordForm(forms.Form):
+    new_password = forms.CharField(widget=PasswordInput())
+    confirm_password = forms.CharField(widget=PasswordInput())

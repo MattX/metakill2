@@ -58,10 +58,10 @@ class Killer(models.Model):
 
 
 class Kill(models.Model):
-    killer = models.ForeignKey(Killer)
-    writer = models.ForeignKey(User, related_name='written')
-    target = models.ForeignKey(User, related_name='targetting')
-    assigned_to = models.ForeignKey(User, blank=True, null=True, related_name='assigned')
+    killer = models.ForeignKey(Killer, on_delete=models.CASCADE)
+    writer = models.ForeignKey(User, related_name='written', on_delete=models.PROTECT)
+    target = models.ForeignKey(User, related_name='targetting', on_delete=models.PROTECT)
+    assigned_to = models.ForeignKey(User, blank=True, null=True, related_name='assigned', on_delete=models.PROTECT)
     desc = models.TextField(blank=True, null=True)
     done = models.BooleanField(default=False)
 

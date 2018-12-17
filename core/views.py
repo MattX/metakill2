@@ -159,7 +159,13 @@ def password_change(request):
     if request.method == 'POST':
         pf = forms.PasswordForm(request.POST)
         if pf.is_valid():
-            request.user.set_password(pf.cleaned_data['password'])
+
+            if pf.cleaned_data['confirm_password'] != pf.cleaned_data['new_password']:
+                messages.error(request, "Les mots de passe ne correspondent pas.")
+                new_pf = forms.PasswordForm()
+                return render(request, 'password.html', {'password_form': new_pf})
+
+            request.user.set_password(pf.cleaned_data['new_password'])
             request.user.save()
             messages.success(request, "Mot de passe changé. Veuillez vous reconnecter.")
             return redirect(list_killers)

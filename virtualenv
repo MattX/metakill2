@@ -1,6 +1,0 @@
-Django==1.9
-django-appconf==1.0.1
-django-bootstrap-form==3.2
-Django-Select2==5.5.0
-six==1.10.0
-wheel==0.26.0
