@@ -159,7 +159,7 @@ def password_change(request):
 
             request.user.set_password(pf.cleaned_data['new_password'])
             request.user.save()
-            messages.success(request, "Mot de passe changé. Veuillez vous reconnecter.")
+            messages.success(request, "Mot de passe changé. Tu dois te reconnecter.")
             return redirect(list_killers)
 
     pf = forms.PasswordForm()
@@ -168,13 +168,13 @@ def password_change(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "Vous avez été déconnecté.")
+    messages.success(request, "Tu as été déconnecté.")
     return redirect(login_view)
 
 
 def create_user_view(request):
     if request.user.is_authenticated:
-        messages.error(request, "Vous ne pouvez pas créer un nouvel utilisateur en étant connecté.")
+        messages.error(request, "Tu ne peux pas créer un nouvel utilisateur en étant connecté.")
         return redirect(list_killers)
 
     if request.method == 'POST':

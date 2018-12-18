@@ -8,15 +8,15 @@ from . import models
 
 
 class KillerForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['participants'].label_from_instance = lambda obj: user(obj)
-        self.fields['admins'].label_from_instance = lambda obj: user(obj)
-
     class Meta:
         model = models.Killer
         fields = ['name', 'phase', 'participants', 'admins']
         widgets = {'participants': Select2MultipleWidget, 'admins': Select2MultipleWidget}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['participants'].label_from_instance = lambda obj: user(obj)
+        self.fields['admins'].label_from_instance = lambda obj: user(obj)
 
 
 class KillFillForm(forms.ModelForm):
@@ -53,6 +53,10 @@ class CreateUserForm(forms.ModelForm):
         fields = ['username', 'first_name', 'password']
         widgets = {'password': forms.PasswordInput()}
         help_texts = {
-            'username': "Mets un truc reconnaissable genre ton prénom pour que le pauvre Matthieu s'y retrouve.",
-            'first_name': "Nom qui va s'afficher partout."
+            'first_name': "Nom qui va s'afficher partout. Emoji autorisés."
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].help_text +=\
+            " Mets un truc reconnaissable genre ton prénom pour que le pauvre Matthieu s'y retrouve."
