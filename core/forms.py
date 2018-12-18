@@ -8,6 +8,11 @@ from . import models
 
 
 class KillerForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['participants'].label_from_instance = lambda obj: user(obj)
+        self.fields['admins'].label_from_instance = lambda obj: user(obj)
+
     class Meta:
         model = models.Killer
         fields = ['name', 'phase', 'participants', 'admins']
