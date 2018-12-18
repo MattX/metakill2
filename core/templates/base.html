@@ -1,3 +1,5 @@
+{% load core_extras %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +7,7 @@
     <title>Metakill 2r{{ metakill_version }}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     {% block extra_includes %}
     {% endblock %}
 </head>
@@ -28,7 +31,7 @@
 
         {% if request.user.is_authenticated %}
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">{{ request.user }}</a></li>
+        <li><a href="#">{{ request.user | user }}</a></li>
         <li><a href="{% url 'password_change' %}">Changer de mot de passe</a></li>
         <li><a href="{% url 'logout_view' %}">Se déconnecter</a></li>
       </ul>
@@ -41,7 +44,7 @@
 {% if messages %}
 <div class="row">
     {% for message in messages %}
-    <div class="alert alert-warning"{# {% if message.tags %} class="{{ message.tags }}{% endif %} #}>{{ message }}</div>
+    <div class="alert alert-warning">{{ message }}</div>
     {% endfor %}
 </div>
 {% endif %}

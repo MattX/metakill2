@@ -24,6 +24,7 @@ class Killer(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     phase = models.IntegerField(choices=PHASE_CHOICES, default=0)
+    is_default = models.BooleanField(default=False)
 
     def __str__(self):
         return "Killer: " + self.name
@@ -40,12 +41,18 @@ class Killer(models.Model):
                     Kill(killer=self, writer=writer, target=target).save()
 
     def assign(self):
+        if self.phase != Killer.Phases.filling:
+            raise RuntimeError("Phase incorrecte pour assignation")
+
         for target in self.participants.all():
             suitable_kills = list(self.kill_set.filter(target=target))
             for assignee in self.participants.exclude(pk=target.pk):
                 k = choose_and_remove(suitable_kills)
                 k.assigned_to = assignee
                 k.save()
+
+        self.phase = Killer.Phases.playing
+        self.save()
 
     def count_valid_kills(self):
         valid = []

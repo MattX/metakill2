@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load bootstrap %}
+
+{% block body %}
+    <h1>Incription</h1>
+
+    <form method="POST">
+    {% csrf_token %}
+    {{ create_user_form | bootstrap }}
+    <button type="submit" class="btn bn-default">Feu</button>
+    </form>
+{% endblock %}

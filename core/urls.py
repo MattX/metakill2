@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^$|^killer/$', views.list_killers, name='list_killers'),
     url(r'^killer/(?P<id>[0-9]+)/', views.view_killer, name='view_killer'),
     url(r'^password/$', views.password_change, name='password_change'),
-    url(r'^logout/$', views.logout_view, name='logout_view')
+    url(r'^logout/$', views.logout_view, name='logout_view'),
+    url(r'^create-user/$', views.create_user_view, name='create_user_view'),
 ]

@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load bootstrap %}
+{% load core_extras %}
 
 {% block extra_includes %}
     {{ killer_form.media }}
 {% endblock %}
 
 {% block body %}
-    <h1>Modifier le killer : {{ killer.name }}</h1>
+    <h1>Killer : {{ killer.name }}</h1>
 
     <form method="POST">
         {% csrf_token %}
@@ -18,7 +19,7 @@
         {% if show_fill %}
             <hr>
             <h3>Écriture des kills</h3>
-            <p>Avancement général : {% for p in valid_count %}{{ p.0 }}: {{ p.1 }} kills
+            <p>Avancement général : {% for p in valid_count %}{{ p.0 | user }}: {{ p.1 }} kills
             remplis{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {{ my_kill_forms|bootstrap }}
         {% endif %}
@@ -27,22 +28,22 @@
             <hr>
             <h3>Mes kills</h3>
             {% for k in my_assigned_kills %}
-                <p><b>{{ k.target }}</b> (écrit par {{ k.writer }}):<br/> {{ k.desc|linebreaksbr }} </p>
+                <p><b>{{ k.target | user }}</b> (écrit par {{ k.writer | user }}):<br/> {{ k.desc|linebreaksbr }} </p>
             {% endfor %}
             <hr>
             <h3>Kills effectués</h3>
             <table class="table">
                 <tr>
-                    <th>^ kille -></th>
+                    <th>↱ a killé →</th>
                     {% for target in participants %}
-                        <th>{{ target }}</th>
+                        <th>{{ target | user }}</th>
                     {% endfor %}
                 </tr>
                 {% for kill_assign_list in kill_done_dic %}
                     <tr>
                         {% for kdf in kill_assign_list %}
                             {% if forloop.first %}
-                                <th>{{ kdf }}</th>
+                                <th>{{ kdf | user }}</th>
                             {% else %}
                                 <td>
                                     {% for field in kdf %}
@@ -58,7 +59,7 @@
             <table class="table">
             <tr><th></th><th>Kills effectués</th><th>Kills subis</th><th>Total</th></tr>
             {% for s in scores %}
-                <tr><th>{{ s.player }}</th><td>{{ s.has_killed }}</td><td>{{ s.was_killed }}</td>
+                <tr><th>{{ s.player | user }}</th><td>{{ s.has_killed }}</td><td>{{ s.was_killed }}</td>
                 <td>{{ s.total }}</td></tr>
             {% endfor %}
             </table>
@@ -66,8 +67,8 @@
             <h3>Kills</h3>
             <table>
             {% for f in kills_to_display %}
-            <tr><td>{{ f.assigned_to }} pour {{ f.target }} :</td>
-                <td> {{ f.desc }} (écrit par {{ f.writer }})</td></tr>
+            <tr><td>{{ f.assigned_to | user }} pour {{ f.target | user }} :</td>
+                <td> {{ f.desc | user }} (écrit par {{ f.writer | user }})</td></tr>
             {% endfor %}
             </table>
         {% endif %}

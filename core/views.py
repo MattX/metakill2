@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import ModelForm, PasswordInput, modelformset_factory
 from django.contrib import messages
+from metakill2.settings import CREATE_USER_SECRET
 
 from . import models, forms, misc
 
@@ -17,9 +18,8 @@ def login_view(request):
         class Meta:
             model = User
             fields = ['username', 'password']
-            widgets = {
-                'password': PasswordInput(),
-            }
+            widgets = {'password': PasswordInput()}
+            help_texts = {'username': ''}
 
         def is_valid(self):
             return True
@@ -35,10 +35,6 @@ def login_view(request):
             messages.add_message(request, messages.ERROR, "Mot de passe ou nom d'utilisateur incorrect")
 
     return render(request, 'login.html', {'login_form': login_form})
-
-
-def new_killer(request):
-    pass
 
 
 def view_killer(request, id):
@@ -69,9 +65,7 @@ def view_killer(request, id):
                 killer.assign()
         af = forms.AssignForm(prefix=assign_form_prefix)
 
-
     # Kills forms
-    kills_forms_prefix = "my_kills"
     my_kill_forms_factory = modelformset_factory(models.Kill, form=forms.KillFillForm, extra=0)
     my_kills = killer.kill_set.filter(writer=request.user)
 
@@ -82,8 +76,8 @@ def view_killer(request, id):
         try:
             if my_kill_forms.is_valid():
                 my_kill_forms.save()
-        except ValidationError:
-            my_kill_forms = my_kill_forms_factory(queryset=my_kills, prefix="my_kills")
+        except ValidationError as e:
+            messages.error(request, f"Erreur de validation: {e}")
 
     valid_count = killer.count_valid_kills()
 
@@ -115,10 +109,8 @@ def view_killer(request, id):
                     assignee_kills.append(None)
         kill_done_list.append(assignee_kills)
 
-
     # Kills I must do
     my_assigned_kills = killer_kills.filter(assigned_to=request.user)
-
 
     # Scores
     class Score:
@@ -135,7 +127,7 @@ def view_killer(request, id):
 
     scores.sort(key=lambda score: score.total, reverse=True)
 
-    # Done kills
+    # Completed kills
     kills_to_display = killer.kill_set.all()
     if killer.phase < killer.Phases.done:
         kills_to_display = kills_to_display.filter(done=True)
@@ -176,5 +168,31 @@ def password_change(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "Vous avez été déconnecté")
+    messages.success(request, "Vous avez été déconnecté.")
     return redirect(login_view)
+
+
+def create_user_view(request):
+    if request.user.is_authenticated:
+        messages.error(request, "Vous ne pouvez pas créer un nouvel utilisateur en étant connecté.")
+        return redirect(list_killers)
+
+    if request.method == 'POST':
+        cuf = forms.CreateUserForm(request.POST)
+        if cuf.is_valid():
+
+            if cuf.cleaned_data['secret_code'] != CREATE_USER_SECRET:
+                messages.error(request, "Le code d'inscription est incorrect.")
+                return render(request, 'create_user.html', {'create_user_form': cuf})
+
+            u = cuf.save()
+            default_killers = models.Killer.objects.filter(is_default=True).all()
+            for k in default_killers:
+                k.participants.add(u)
+            login(request, u)
+            messages.info(request, "Utilisateur créé.")
+
+            return redirect(list_killers)
+
+    cuf = forms.CreateUserForm()
+    return render(request, 'create_user.html', {'create_user_form': cuf})

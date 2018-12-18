@@ -24,9 +24,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 if not PRODUCTION:
     SECRET_KEY = 'rd#m%qp1izlrc@+pn(km3c#jh_yqn-g&y$o6y4w&-mrj08t5w5'
+    CREATE_USER_SECRET = 'abcdef'
     ALLOWED_HOSTS = []
 else:
-    from production import SECRET_KEY, ALLOWED_HOSTS
+    from production import SECRET_KEY, ALLOWED_HOSTS, CREATE_USER_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not PRODUCTION
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'metakill2.middleware.login_required_middleware',
 ]
 
@@ -132,4 +134,4 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 LOGIN_URL = '/login/'
-LOGIN_EXEMPT_URLS = '/admin/'
+LOGIN_EXEMPT_URLS = ['admin/', 'create-user/']

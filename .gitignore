@@ -1,3 +1,5 @@
+python/
+env36/
 db.sqlite3
 metakill2/production.py
 
