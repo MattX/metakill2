@@ -59,11 +59,13 @@ def view_killer(request, id):
             if kf.is_valid():
                 kf.save()
 
-            af = forms.AssignForm(request.POST, prefix=assign_form_prefix)
-            print(af.is_valid())
-            if af.cleaned_data['assign_kills']:
-                killer.assign()
-        af = forms.AssignForm(prefix=assign_form_prefix)
+            if killer.phase == models.Killer.Phases.filling:
+                af = forms.AssignForm(request.POST, prefix=assign_form_prefix)
+                if af.is_valid() and af.cleaned_data['assign_kills']:
+                    killer.assign()
+
+        if killer.phase == models.Killer.Phases.filling:
+            af = forms.AssignForm(prefix=assign_form_prefix)
 
     # Kills forms
     my_kill_forms_factory = modelformset_factory(models.Kill, form=forms.KillFillForm, extra=0)
