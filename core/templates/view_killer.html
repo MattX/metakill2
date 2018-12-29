@@ -12,7 +12,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ killer_form|bootstrap }}
-        {% if admin %}
+        {% if admin and assign_form %}
             {{ assign_form|bootstrap }}
         {% endif %}
 
