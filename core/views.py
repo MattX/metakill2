@@ -96,7 +96,7 @@ def view_killer(request, id):
                 assignee_kills.append("")
             else:
                 current_kill = killer_kills.filter(assigned_to=assigned_to, target=target).first()
-                if not current_kill is None:
+                if current_kill is not None:
                     if admin and request.method == "POST":
                         current_kdf = forms.KillDoneForm(request.POST, instance=current_kill,
                                                          prefix="done_kills_" + str(current_kill.pk))

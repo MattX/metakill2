@@ -68,7 +68,7 @@
             <table>
             {% for f in kills_to_display %}
             <tr><td>{{ f.assigned_to | user }} pour {{ f.target | user }} :</td>
-                <td> {{ f.desc | user }} (écrit par {{ f.writer | user }})</td></tr>
+                <td> {{ f.desc }} (écrit par {{ f.writer | user }})</td></tr>
             {% endfor %}
             </table>
         {% endif %}
