@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.forms import ModelForm, PasswordInput, modelformset_factory
 from django.contrib import messages
+from django.contrib.auth.models import User
 from metakill2.settings import CREATE_USER_SECRET
 
 from . import models, forms, misc
@@ -187,7 +188,9 @@ def create_user_view(request):
                 messages.error(request, "Le code d'inscription est incorrect.")
                 return render(request, 'create_user.html', {'create_user_form': cuf})
 
-            u = cuf.save()
+            u = User.objects.create_user(username=cuf.instance.username,
+                    password=cuf.instance.password)
+
             default_killers = models.Killer.objects.filter(is_default=True).all()
             for k in default_killers:
                 k.participants.add(u)
@@ -198,3 +201,4 @@ def create_user_view(request):
 
     cuf = forms.CreateUserForm()
     return render(request, 'create_user.html', {'create_user_form': cuf})
+
