@@ -42,9 +42,9 @@ def view_killer(request, id):
     killer = get_object_or_404(models.Killer, id=id)
     admin = request.user in killer.admins.all()
 
-    if not request.user in list(killer.admins.all()) + list(killer.participants.all()):
+    if not request.user.is_superuser and (request.user not in
+                                          list(killer.admins.all()) + list(killer.participants.all())):
         raise PermissionDenied
-
 
     # General form
     general_form_prefix = "general"
@@ -121,7 +121,7 @@ def view_killer(request, id):
             self.player = player
             self.has_killed = has_killed
             self.was_killed = was_killed
-            self.total = has_killed*1.5 - was_killed
+            self.total = has_killed * 1.5 - was_killed
 
     scores = []
     for p in killer.participants.all():
@@ -145,7 +145,11 @@ def view_killer(request, id):
 
 
 def list_killers(request):
-    my_killers = models.Killer.objects.filter(Q(participants__in=[request.user]) | Q(admins__in=[request.user])).distinct()
+    if request.user.is_superuser:
+        my_killers = models.Killer.objects.all()
+    else:
+        my_killers = models.Killer.objects.filter(
+            Q(participants__in=[request.user]) | Q(admins__in=[request.user])).distinct()
 
     return render(request, 'list.html', {'killers': my_killers})
 
