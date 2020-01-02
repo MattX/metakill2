@@ -73,7 +73,7 @@ class Kill(models.Model):
     done = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('writer', 'target')
+        unique_together = ('writer', 'target', 'killer')
 
     def __str__(self):
-        return "Kill de " + str(self.writer) + " pour " + str(self.target)
+        return "Kill de " + str(self.writer) + " pour " + str(self.target) + " (killer " + str(self.killer) + ")"
